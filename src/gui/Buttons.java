@@ -1,11 +1,18 @@
 package gui;
 
 import database.DatabaseIO;
+import database.SearchBarHandling;
+import fileReading.DataReading;
+import fileReading.SavfReading;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class Buttons implements IScenes
 {
@@ -391,6 +398,55 @@ public class Buttons implements IScenes
 			{
 
 
+			}
+		});
+
+		Screen.searchMovieBar.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent focusEvent) {
+				DataReading reading = new DataReading();
+				reading.scan("res/script.csv");
+
+				SavfReading savfReading = new SavfReading();
+				savfReading.scan("res/settings.savf");
+
+				String defText = reading.getColumn(reading.getHeaders().get(Integer.parseInt(savfReading.getValue("lang")))).get(24);
+
+				if (Screen.searchMovieBar.getText().equals(defText)) Screen.searchMovieBar.setText(null);
+			}
+
+			@Override
+			public void focusLost(FocusEvent focusEvent) {}
+		});
+
+		Screen.searchMovieBar.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent documentEvent) {react();}
+
+			@Override
+			public void removeUpdate(DocumentEvent documentEvent) {react();}
+
+			@Override
+			public void changedUpdate(DocumentEvent documentEvent) {react();}
+
+			private void react()
+			{
+				if (Screen.searchMovieBar.getText().equals(""))
+				{
+					/*db.setData("res/usr/moviedb.csv", 0);
+					db.fillData(new Combiner(Combiner.Sections.MOVIE_NAMES).getJTextFieldSet(),
+							new Combiner(Combiner.Sections.MOVIE_OPEN_BUTTONS).getJButtonSet(),
+							new Combiner(Combiner.Sections.MOVIE_DELETE_BUTTONS).getJButtonSet(),
+							new Combiner(Combiner.Sections.MOVIE_SCORES).getJComboBoxSet());*/
+				}
+				else
+				{
+					db.setData(new SearchBarHandling(Screen.searchMovieBar.getText(), "res/usr/moviedb.csv").retrieve(), 0);
+					db.fillData(new Combiner(Combiner.Sections.MOVIE_NAMES).getJTextFieldSet(),
+							new Combiner(Combiner.Sections.MOVIE_OPEN_BUTTONS).getJButtonSet(),
+							new Combiner(Combiner.Sections.MOVIE_DELETE_BUTTONS).getJButtonSet(),
+							new Combiner(Combiner.Sections.MOVIE_SCORES).getJComboBoxSet());
+				}
 			}
 		});
 

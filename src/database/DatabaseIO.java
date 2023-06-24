@@ -93,5 +93,26 @@ public class DatabaseIO
      }
 
      public void setPage(Integer page) {this.page = page;}
+     public void setData(ArrayList<ArrayList<String>> data, int page)
+     {
+         //concurrent modification exception
+         for (ArrayList<String> d: data)
+             if (d != null)
+                for (String s: d)
+                     if (d.contains(s))
+                        d.remove(0);
+
+         this.data = data;
+         this.page = page;
+     }
+
+     public void setData(String path, int page)
+     {
+         if (data != null)
+         {
+
+             loadData(path, page);
+         }
+     }
 
 }
