@@ -4,6 +4,7 @@ import fileReading.DataReading;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class DatabaseIO
 {
@@ -95,15 +96,19 @@ public class DatabaseIO
      public void setPage(Integer page) {this.page = page;}
      public void setData(ArrayList<ArrayList<String>> data, int page)
      {
-         //concurrent modification exception
-         for (ArrayList<String> d: data)
-             if (d != null)
-                for (String s: d)
-                     if (d.contains(s))
-                        d.remove(0);
+         for (ArrayList<String> innerList : this.data)
+         {
+             Iterator<String> iterator = innerList.iterator();
+             while (iterator.hasNext())
+             {
+                 iterator.next();
+                 iterator.remove();
+             }
+         }
 
          this.data = data;
          this.page = page;
+
      }
 
      public void setData(String path, int page)
